@@ -33,22 +33,36 @@ function TahoeApp() {
         setVms(allKeys);
     };
 
-    const handleUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        setLoading(true);
-        setStatus("Écriture sur le disque de l'iPad...");
-        try {
-            const db = await idb.openDB('TahoeStorage', 1);
-            await db.put('files', file, file.name);
-            setStatus("Importation terminée !");
-            await loadVMs();
-        } catch (err) {
-            alert("Erreur de stockage : " + err.message);
-        } finally {
-            setLoading(false);
-        }
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    setStatus("Écriture directe...");
+
+    // Utilisation de l'API native sans la variable 'idb'
+    const request = indexedDB.open("TahoeStorage", 1);
+    
+    request.onupgradeneeded = (event) => {
+        event.target.result.createObjectStore("files");
     };
+
+    request.onsuccess = (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction("files", "readwrite");
+        const store = transaction.objectStore("files");
+        
+        const putRequest = store.put(file, file.name);
+        
+        putRequest.onsuccess = () => {
+            setStatus("Sauvegardé sur l'iPad !");
+            setLoading(false);
+            loadVMs();
+        };
+        
+        putRequest.onerror = () => alert("Erreur de stockage.");
+    };
+};
 
     const runTahoe = async (name) => {
         setLoading(true);
