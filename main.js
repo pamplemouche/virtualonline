@@ -1,3 +1,11 @@
+window.onerror = function(msg, url, line) {
+    document.body.innerHTML = `<div style="color:white; background:red; padding:20px;">
+        <h1>Erreur fatale</h1>
+        <p>${msg}</p>
+        <p>Ligne: ${line}</p>
+    </div>`;
+};
+console.log("Démarrage du script...");
 const { useState, useEffect } = React;
 
 function TahoeApp() {
