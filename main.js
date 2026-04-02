@@ -130,4 +130,4 @@ function TahoeApp() {
 
 // Rendu de l'application
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<TahoeApp />);
+root.render(React.createElement(TahoeApp));
